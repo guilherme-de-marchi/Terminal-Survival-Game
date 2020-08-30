@@ -15,3 +15,5 @@
 
 <img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print1.JPG">
 <img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print2.JPG">
+<img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print3.JPG">
+
