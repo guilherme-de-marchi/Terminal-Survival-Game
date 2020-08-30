@@ -1,7 +1,7 @@
 # Created by: Guilherme-de-Marchi
-# Current version: Alpha 1.0
+# Current version: Alpha 1.0.1
 # License: MIT License
-# GitHub: https://github.com/Guilherme-De-Marchi/SobrevivenciaNoTerminal
+# GitHub: https://github.com/Guilherme-De-Marchi/Terminal-Survival-Game
 # '''if you make any improvement scans of the code and 
 # want to contribute to the game, send on my github'''
 
@@ -57,7 +57,7 @@ class Jogador():
             self.mundo.mundo[pos[0]][pos[1]+direcao] = 1
             self.contagem_blocos_fome += 1
         
-        if self.posicao()[1] + 7 >= len(self.mundo.mundo[0]) or self.posicao()[1] - 7 <= 0:
+        if self.posicao()[1] in [8, len(self.mundo.mundo[0]) - 9]:
             self.mundo.gerar_coluna(direcao)
 
     def ficar_com_fome(self):
@@ -113,6 +113,7 @@ class Mundo():
     def __init__(self):
         self.CAMADA_MAX = 30
         self.CAMADA_CARVAO = self.CAMADA_MAX/2
+        self.altura_arvore = 4
         self.configs = {
             'camada_chao_max': 10,
             'camada_chao_min': self.CAMADA_MAX - 3,
@@ -135,49 +136,81 @@ class Mundo():
 
     def gerar_coluna(self, direcao: int):
         if direcao == 1:
-            self.alt += randint(-1, 1)
-            for y in range(len(self.mundo)):
-                if y == self.alt: 
-                    self.mundo[y].append(3)
-                elif y > self.alt: 
-                    if randint(1, 20) == 1 and y >= self.CAMADA_CARVAO:
-                        self.mundo[y].append(6)
+            for i in range(15):
+                self.alt += randint(-1, 1)
+                for y in range(len(self.mundo)):
+                    if y == self.alt: 
+                        self.mundo[y].append(3)
+                    elif y > self.alt: 
+                        if randint(1, 20) == 1 and y >= self.CAMADA_CARVAO:
+                            self.mundo[y].append(6)
+                        else:
+                            self.mundo[y].append(2)
                     else:
-                        self.mundo[y].append(2)
-                else:
-                    self.mundo[y].append(0)
+                        self.mundo[y].append(0)
+
+            for x in range(len(self.mundo[0]) - 16, len(self.mundo[0])):
+                if randint(0, 15) == 1:
+                    for y in range(len(self.mundo)):
+                        if self.mundo[y][x] == 3:
+                            alt = y - 1
+                            break
+                    for i in range(self.altura_arvore):
+                        self.mundo[alt - i][x] = 4
+                    self.mundo[alt - self.altura_arvore][x] = 5
+                    break
 
         elif direcao == -1:
-            for y in range(len(self.mundo)):
-                if self.mundo[y][0] == 3: 
-                    self.alt2 = y + randint(-1, 1)
+            for i in range(15):
+                for y in range(len(self.mundo)):
+                    if self.mundo[y][0] == 3: 
+                        self.alt2 = y + randint(-1, 1)
 
-            for y in range(len(self.mundo)):
-                if y == self.alt2: 
-                    self.mundo[y].insert(0, 3)
-                elif y > self.alt2: 
-                    if randint(1, 20) == 1 and y >= self.CAMADA_CARVAO:
-                        self.mundo[y].insert(0, 6)
+                for y in range(len(self.mundo)):
+                    if y == self.alt2: 
+                        self.mundo[y].insert(0, 3)
+                    elif y > self.alt2: 
+                        if randint(1, 20) == 1 and y >= self.CAMADA_CARVAO:
+                            self.mundo[y].insert(0, 6)
+                        else:
+                            self.mundo[y].insert(0, 2)
                     else:
-                        self.mundo[y].insert(0, 2)
-                else:
-                    self.mundo[y].insert(0, 0)
+                        self.mundo[y].insert(0, 0)
 
-def mostrar_tela(janela, objetos: dict, mundo, jogador):
+            for x in range(0, 15):
+                if randint(0, 15) == 1:
+                    for y in range(len(self.mundo)):
+                        if self.mundo[y][x] == 3:
+                            alt = y - 1
+                            break
+                    for i in range(self.altura_arvore):
+                        self.mundo[alt - i][x] = 4
+                    self.mundo[alt - 4][x] = 5
+                    break
+                    
+
+def mostrar_tela(janela, objetos: dict, mundo, jogador, tela: str):
     janela.clear()
     janela.move(0, 0)
-    janela.addstr('\n')
-    janela.addstr('█'*jogador.vida, color_pair(7))
-    janela.addstr('\n')
-    janela.addstr('█'*jogador.fome, color_pair(9))
-    for y in range(len(mundo.mundo)):
+
+    if tela == 'jogo':
         janela.addstr('\n')
-        for x in range(jogador.posicao()[1]-7, jogador.posicao()[1]+8):
-            janela.addstr('██', color_pair(objetos[mundo.mundo[y][x]]))
-    janela.addstr('\nBloco selecionado:\n')
-    janela.addstr('██', color_pair(objetos[jogador.bloco_na_mao]))
-    janela.addstr(f'\nCoordenadas: {jogador.posicao()}')
-    janela.addstr(f'\nTamanho do mundo: {len(mundo.mundo[0])}')
+        janela.addstr('█'*jogador.vida, color_pair(7))
+        janela.addstr('\n')
+        janela.addstr('█'*jogador.fome, color_pair(9))
+        for y in range(len(mundo.mundo)):
+            janela.addstr('\n')
+            for x in range(jogador.posicao()[1]-7, jogador.posicao()[1]+8):
+                janela.addstr('██', color_pair(objetos[mundo.mundo[y][x]]))
+        janela.addstr('\nBloco selecionado:\n')
+        janela.addstr('██', color_pair(objetos[jogador.bloco_na_mao]))
+        janela.addstr(f'\nCoordenadas: {jogador.posicao()}')
+        janela.addstr(f'\nTamanho do mundo: {len(mundo.mundo[0])}')
+    
+    elif tela == 'morte':
+        janela.addstr('\n')
+        janela.addstr('Você morreu!', color_pair(7))
+
     janela.refresh()
 
 janela = initscr()
@@ -207,17 +240,22 @@ objetos = {
 
 mundo = Mundo()
 
-jogador = Jogador(mundo, 10, 10)
+jogador = Jogador(mundo, 10, 20)
 
-mostrar_tela(janela, objetos, mundo, jogador)
+mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
 
 while True:
     if jogador.vida <= 0:
+        mostrar_tela(janela, objetos, mundo, jogador, 'morte')
+        napms(5000)
         exit()
+    if jogador.fome <= 0:
+        jogador.vida -= 1
+        mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
     if jogador.cair():
-        mostrar_tela(janela, objetos, mundo, jogador)
+        mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
     if jogador.ficar_com_fome():
-        mostrar_tela(janela, objetos, mundo, jogador)
+        mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
     if kbhit():
         entrada = getwch()
         if entrada.isnumeric():
@@ -225,15 +263,15 @@ while True:
             continue
         if entrada.lower() == 'q':
             jogador.quebrar_bloco()
-            mostrar_tela(janela, objetos, mundo, jogador)
+            mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
             continue
         if entrada.lower() == 'e':
             jogador.colocar_bloco(2)
-            mostrar_tela(janela, objetos, mundo, jogador)
+            mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
             continue
         if entrada in ['+', '-']:
             jogador.mudar_bloco_na_mao(entrada, objetos)
-            mostrar_tela(janela, objetos, mundo, jogador)
+            mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
             continue
         jogador.mover(jogador.direcoes.get(entrada.lower()))
-        mostrar_tela(janela, objetos, mundo, jogador)
+        mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
