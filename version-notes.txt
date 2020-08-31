@@ -4,3 +4,8 @@ Version : Alpha 1.0.1
     - Death because of hunger;
     - Optimized world generation. Now, 15 columns of blocks are generated instead of 1;
     - Generation of 1 tree per area of 15 blocks, with a 1/16 chance to be generated;
+
+Version : Alpha 1.0.2
+
+    - Added an inventory;
+    - Feel hungry for breaking blocks, putting blocks, walking or falling;
