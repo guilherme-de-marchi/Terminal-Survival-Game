@@ -11,13 +11,15 @@ from random import randint
 
 class Jogador():
     def __init__(self, mundo, vida: int, fome: int):
+        self.TAMANHO_INVENTARIO = 5
+        self.LIMITE_BLOCOS_ESPACO_INVENTARIO = 99
         self.mundo = mundo
         self.vida = vida
         self.fome = fome
-        self.contagem_blocos_fome = 0
+        self.esta_se_movendo = 0
         self.caindo = 0
-        self.inventario = []
-        self.bloco_na_mao = 2
+        self.inventario = {espaco: {0: 0} for espaco in range(self.TAMANHO_INVENTARIO)}
+        self.espaco_inventario = 0
         self.ponteiro = (0, 1)
         self.direcoes = {
             'a': -1,
@@ -50,20 +52,20 @@ class Jogador():
                 if self.mundo.mundo[pos[0]-1][pos[1]] == 0:
                     self.mundo.mundo[pos[0]][pos[1]] = 0
                     self.mundo.mundo[pos[0]-1][pos[1]+direcao] = 1
-                    self.contagem_blocos_fome += 1
+                    self.esta_se_movendo += 1
 
         elif self.mundo.mundo[pos[0]][pos[1]+direcao] == 0:
             self.mundo.mundo[pos[0]][pos[1]] = 0
             self.mundo.mundo[pos[0]][pos[1]+direcao] = 1
-            self.contagem_blocos_fome += 1
-        
+            self.esta_se_movendo += 1
+
         if self.posicao()[1] in [8, len(self.mundo.mundo[0]) - 9]:
-            self.mundo.gerar_coluna(direcao)
+            self.mundo.gerar_area(direcao)
 
     def ficar_com_fome(self):
-        if self.contagem_blocos_fome >= 10:
+        if self.esta_se_movendo >= 10:
             self.fome -= 1
-            self.contagem_blocos_fome = 0
+            self.esta_se_movendo = 0
             return 1
         return 0
 
@@ -73,6 +75,7 @@ class Jogador():
             self.mundo.mundo[pos[0]][pos[1]] = 0
             self.mundo.mundo[pos[0]+1][pos[1]] = 1
             self.caindo += 1
+            self.esta_se_movendo += 1
             return True
 
         if self.caindo > 2:
@@ -83,31 +86,48 @@ class Jogador():
         self.caindo = 0
         return False
 
-    def mudar_bloco_na_mao(self, entrada: str, objetos: dict):
-        objetos = list(objetos.keys())[2:]
-        if entrada == '+':
-            if objetos.index(self.bloco_na_mao) + 1 == len(objetos):
-                self.bloco_na_mao = objetos[0]
+    def mudar_espaco_inventario(self, entrada: str):
+        if entrada == '+': 
+            if self.espaco_inventario < self.TAMANHO_INVENTARIO - 1:
+                self.espaco_inventario += 1
             else:
-                self.bloco_na_mao = objetos[objetos.index(self.bloco_na_mao)+1]
+                self.espaco_inventario = 0
         elif entrada == '-':
-            if objetos.index(self.bloco_na_mao) - 1 < 0:
-                self.bloco_na_mao = objetos[len(objetos)-1]
+            if self.espaco_inventario > 0:
+                self.espaco_inventario -= 1
             else:
-                self.bloco_na_mao = objetos[objetos.index(self.bloco_na_mao)-1]
+                self.espaco_inventario = self.TAMANHO_INVENTARIO - 1
 
     def quebrar_bloco(self):
-        self.mundo.mundo[self.posicao()[0]+self.ponteiro[0]][self.posicao()[1]+self.ponteiro[1]] = 0
 
-    def colocar_bloco(self, bloco: int):
-        if self.ponteiro == (1, 0):
-                pos = self.posicao()
-                self.mundo.mundo[pos[0]][pos[1]] = 0
-                self.mundo.mundo[pos[0]-1][pos[1]] = 1
-                self.mundo.mundo[self.posicao()[0]+self.ponteiro[0]][self.posicao()[1]+self.ponteiro[1]] = self.bloco_na_mao
-        
-        elif self.mundo.mundo[self.posicao()[0]+self.ponteiro[0]][self.posicao()[1]+self.ponteiro[1]] == 0:
-            self.mundo.mundo[self.posicao()[0]+self.ponteiro[0]][self.posicao()[1]+self.ponteiro[1]] = self.bloco_na_mao
+        bloco = self.mundo.mundo[self.posicao()[0] + self.ponteiro[0]][self.posicao()[1] + self.ponteiro[1]]
+        for espaco in self.inventario:
+            if list(self.inventario[espaco].keys())[0] == bloco and self.inventario[espaco][bloco] < self.LIMITE_BLOCOS_ESPACO_INVENTARIO:
+                self.inventario[espaco][bloco] += 1
+                break
+            elif list(self.inventario[espaco].keys())[0] == 0:
+                self.inventario[espaco] = {bloco: 1}
+                break
+
+        self.esta_se_movendo += 1
+
+        self.mundo.mundo[self.posicao()[0] + self.ponteiro[0]][self.posicao()[1] + self.ponteiro[1]] = 0
+
+    def colocar_bloco(self):
+        bloco = list(self.inventario[self.espaco_inventario].keys())[0]
+        if self.inventario[self.espaco_inventario][bloco] > 0:
+            
+            if self.mundo.mundo[self.posicao()[0] + self.ponteiro[0]][self.posicao()[1] + self.ponteiro[1]] == 0:
+                self.mundo.mundo[self.posicao()[0] + self.ponteiro[0]][self.posicao()[1] + self.ponteiro[1]] = bloco
+            
+            elif self.ponteiro == (1, 0):
+                self.mundo.mundo[self.posicao()[0] - self.ponteiro[0]][self.posicao()[1] + self.ponteiro[1]] = 1
+                self.mundo.mundo[self.posicao()[0] + self.ponteiro[0]][self.posicao()[1] + self.ponteiro[1]] = bloco
+
+            self.inventario[self.espaco_inventario][bloco] -= 1
+            if self.inventario[self.espaco_inventario][bloco] == 0: self.inventario[self.espaco_inventario] = {0: 0}
+
+        self.esta_se_movendo += 1
 
 class Mundo():
     def __init__(self):
@@ -134,7 +154,7 @@ class Mundo():
                     self.mundo[y-1][x] = 1
                     break
 
-    def gerar_coluna(self, direcao: int):
+    def gerar_area(self, direcao: int):
         if direcao == 1:
             for i in range(15):
                 self.alt += randint(-1, 1)
@@ -194,20 +214,35 @@ def mostrar_tela(janela, objetos: dict, mundo, jogador, tela: str):
     janela.move(0, 0)
 
     if tela == 'jogo':
+
         janela.addstr('\n')
         janela.addstr('█'*jogador.vida, color_pair(7))
         janela.addstr('\n')
         janela.addstr('█'*jogador.fome, color_pair(9))
+
         for y in range(len(mundo.mundo)):
             janela.addstr('\n')
-            for x in range(jogador.posicao()[1]-7, jogador.posicao()[1]+8):
+
+            for x in range(jogador.posicao()[1] - 7, jogador.posicao()[1] + 8):
                 janela.addstr('██', color_pair(objetos[mundo.mundo[y][x]]))
-        janela.addstr('\nBloco selecionado:\n')
-        janela.addstr('██', color_pair(objetos[jogador.bloco_na_mao]))
-        janela.addstr(f'\nCoordenadas: {jogador.posicao()}')
+
+        janela.addstr('\n\nInventário:\n')
+        janela.addstr('    ' * jogador.espaco_inventario + ' V')
+        janela.addstr('\n')
+
+        for i in range(jogador.TAMANHO_INVENTARIO):
+
+            janela.addstr(' ██ ', color_pair(objetos[list(jogador.inventario[i].keys())[0]]))
+
+        janela.addstr('\n')
+        for i in range(jogador.TAMANHO_INVENTARIO):
+
+            janela.addstr('{: ^4}'.format(jogador.inventario[i][list(jogador.inventario[i].keys())[0]]))
+        
         janela.addstr(f'\nTamanho do mundo: {len(mundo.mundo[0])}')
     
     elif tela == 'morte':
+
         janela.addstr('\n')
         janela.addstr('Você morreu!', color_pair(7))
 
@@ -245,33 +280,44 @@ jogador = Jogador(mundo, 10, 20)
 mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
 
 while True:
+    
     if jogador.vida <= 0:
         mostrar_tela(janela, objetos, mundo, jogador, 'morte')
         napms(5000)
         exit()
+
     if jogador.fome <= 0:
         jogador.vida -= 1
         mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
+
     if jogador.cair():
         mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
+
     if jogador.ficar_com_fome():
         mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
+
     if kbhit():
+
         entrada = getwch()
+
         if entrada.isnumeric():
             jogador.mover_ponteiro(int(entrada))
             continue
+
         if entrada.lower() == 'q':
             jogador.quebrar_bloco()
             mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
             continue
+
         if entrada.lower() == 'e':
-            jogador.colocar_bloco(2)
+            jogador.colocar_bloco()
             mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
             continue
+
         if entrada in ['+', '-']:
-            jogador.mudar_bloco_na_mao(entrada, objetos)
+            jogador.mudar_espaco_inventario(entrada)
             mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
             continue
+
         jogador.mover(jogador.direcoes.get(entrada.lower()))
         mostrar_tela(janela, objetos, mundo, jogador, 'jogo')
