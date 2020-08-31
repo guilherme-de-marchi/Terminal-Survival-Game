@@ -14,7 +14,7 @@
 
 # How to Play ▶
 
-## Controls
+## :video_game: Controls
 
 <p><b>To walk, use:</b></p>
 <p> - <b>[ A ]</b> to go left;</p>
@@ -36,7 +36,9 @@
 <p><b>To break a block, use:</b></p>
 <p> - <b>[ Q ]</b>;</p>
 
-# Some Game Prints
+# :clapper: Some Game Images
+
+<img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/in-game.gif" height="550" width="200"/>
 
 <img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print1.JPG" height="550" width="200"/>
 <img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print2.JPG" height="550" width="200"/>
