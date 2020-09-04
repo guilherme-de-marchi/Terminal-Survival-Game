@@ -9,3 +9,16 @@ Version : Alpha 1.0.2
 
     - Added an inventory;
     - Feel hungry for breaking blocks, putting blocks, walking or falling;
+
+Version : Alpha 1.0.3
+
+    - Removed feel hungry when is falling;
+    - Code optimization;
+    - Now the trees are randomly generated with a 1/20 chance and has a height between 3 and 5 blocks;
+    - A small change in the world's generation system;
+    - The inventory now has 6 spaces with a maximum of 10 items each;
+    - Selected inventory space indicator changed from ' V ' to ' -- ';
+    - Fixed the bug that caused the world to have an end or the mountains to be higher than the maximum height of the game;
+    - Coal has a 1/10 chance of being generated;
+    - Width of the field of viewchanged from 15 blocks to 13 blocks;
+    - World depth changed from 30 blocks to 20 blocks;
