@@ -38,9 +38,6 @@
 
 # :clapper: Some Game Images
 
-<img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/in-game.gif" height="550" width="200"/>
+<img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print5.JPG" height="550" width="200"/>
+<img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print6.JPG" height="550" width="200"/>
 
-<img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print1.JPG" height="550" width="200"/>
-<img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print2.JPG" height="550" width="200"/>
-<img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print3.JPG" height="550" width="200"/>
-<img src="https://raw.githubusercontent.com/Guilherme-De-Marchi/Terminal-Survival-Game/master/img/print4.JPG" height="550" width="200"/>
