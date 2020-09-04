@@ -1,5 +1,5 @@
 # ꧁Terminal Survival Game꧂
-<p><b>Current Version : Alpha 1.0.2</b></p>
+<p><b>Current Version : Alpha 1.0.3</b></p>
 <p>A Minecraft-style 2D sand-box game made in Python to run on Windows terminals.</p>
 <p>Project status: in development :warning:</p>
 <p><i>**note: this game is being developed in portuguese, but in the future i will add the english translation.</i></p>
